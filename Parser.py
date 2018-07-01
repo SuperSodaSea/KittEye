@@ -46,6 +46,7 @@ class Tokenizer:
                     break
             if not match:
                 raise RuntimeError('Unknown token at ' + str(pos) + ': ' + data[pos])
+        tokens.append(Token('End', ''))
         return tokens
 
 class Parser:
