@@ -46,12 +46,93 @@ class Tokenizer:
                     break
             if not match:
                 raise RuntimeError('Unknown token at ' + str(pos) + ': ' + data[pos])
-        tokens.append(Token('End', ''))
+        tokens.append(Token('End', '<End>'))
         return tokens
 
 class Parser:
+    def nextToken(self):
+        self.pos += 1
+        self.token = self.tokens[self.pos]
+    def parseError(self):
+        raise RuntimeError('Unexpected token ' + str(self.token.data))
+    def expectToken(self, type):
+        if self.token.type != type: self.parseError()
+    def parseType(self):
+        if self.token.type == 'Identifier':
+            print('    type', self.token.data)
+            self.nextToken()
+            if self.token.type == '(':
+                self.nextToken()
+                self.parseType()
+                self.expectToken(')')
+                self.nextToken()
+        elif self.token.type == '(':
+            self.nextToken()
+            first = True
+            while self.token.type != ')':
+                if not first:
+                    self.expectToken(',')
+                    self.nextToken()
+                else:
+                    first = False
+                self.expectToken('Identifier')
+                print('    argument', self.token.data)
+                self.nextToken()
+                self.expectToken(':')
+                self.nextToken()
+                self.parseType()
+            self.nextToken()
+            if self.token.type == '->':
+                self.nextToken()
+                self.parseType()
+        else:
+            self.parseError()
+    def parseStruct(self):
+        self.nextToken()
+        self.expectToken('Identifier')
+        print('struct', self.token.data)
+        self.nextToken()
+        self.expectToken('{')
+        self.nextToken()
+        while self.token.type != '}':
+            self.expectToken('Identifier')
+            print('    member', self.token.data)
+            self.nextToken()
+            self.expectToken(':')
+            self.nextToken()
+            self.parseType()
+            self.expectToken(';')
+            self.nextToken()
+        self.nextToken()
+    def parseInterface(self):
+        self.nextToken()
+        self.expectToken('Identifier')
+        print('interface', self.token.data)
+        self.nextToken()
+        self.expectToken('{')
+        self.nextToken()
+        while self.token.type != '}':
+            self.expectToken('Identifier')
+            print('    member', self.token.data)
+            self.nextToken()
+            self.expectToken('(')
+            self.parseType()
+            self.expectToken(';')
+            self.nextToken()
+        self.nextToken()
     def parse(self, tokens):
-        return
+        self.tokens = tokens
+        self.pos = 0
+        self.token = self.tokens[0]
+        while self.token.type != 'End':
+            if self.token.type == 'Identifier':
+                if self.token.data == 'struct':
+                    self.parseStruct()
+                    continue
+                elif self.token.data == 'interface':
+                    self.parseInterface()
+                    continue
+            self.parseError()
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
