@@ -10,6 +10,12 @@ class Token:
     def __str__(self):
         return '({}, {})'.format(self.type, self.data)
 
+class Type:
+    def __init__(self, type, data, childs):
+        self.type = type
+        self.data = data
+        self.childs = childs
+
 class Tokenizer:
     def __init__(self):
         self.space = re.compile('[ \t\r\n]+')
