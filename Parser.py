@@ -94,9 +94,10 @@ class Parser:
         else:
             self.parseError()
     def parseStruct(self):
+        type = self.token.data
         self.nextToken()
         self.expectToken('Identifier')
-        print('struct', self.token.data)
+        print(type, self.token.data)
         self.nextToken()
         self.expectToken('{')
         self.nextToken()
@@ -110,33 +111,14 @@ class Parser:
             self.expectToken(';')
             self.nextToken()
         self.nextToken()
-    def parseInterface(self):
-        self.nextToken()
-        self.expectToken('Identifier')
-        print('interface', self.token.data)
-        self.nextToken()
-        self.expectToken('{')
-        self.nextToken()
-        while self.token.type != '}':
-            self.expectToken('Identifier')
-            print('    member', self.token.data)
-            self.nextToken()
-            self.expectToken('(')
-            self.parseType()
-            self.expectToken(';')
-            self.nextToken()
-        self.nextToken()
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
         self.token = self.tokens[0]
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
-                if self.token.data == 'struct':
+                if self.token.data == 'struct' or self.token.data == 'interface':
                     self.parseStruct()
-                    continue
-                elif self.token.data == 'interface':
-                    self.parseInterface()
                     continue
             self.parseError()
 
