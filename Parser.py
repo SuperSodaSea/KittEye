@@ -97,19 +97,25 @@ class Parser:
         if self.token.type == 'Identifier':
             name = self.token.data
             self.nextToken()
-            args = []
             if self.token.type == '(':
                 self.nextToken()
-                args.append(self.parseType())
-                self.expectToken(')')
+                args = []
+                first = True
+                while self.token.type != ')':
+                    if not first:
+                        self.expectToken(',')
+                        self.nextToken()
+                    else:
+                        first = False
+                    args.append(self.parseType())
                 self.nextToken()
                 return Type('Template', name, args)
             else:
                 return Type('Base', name)
         elif self.token.type == '(':
             self.nextToken()
-            first = True
             args = []
+            first = True
             while self.token.type != ')':
                 if not first:
                     self.expectToken(',')
