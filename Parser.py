@@ -145,17 +145,20 @@ class Parser:
         self.nextToken()
         self.expectToken('{')
         self.nextToken()
+        members = []
         while self.token.type != '}':
             self.expectToken('Identifier')
-            name = self.token.data
+            memberName = self.token.data
             self.nextToken()
             self.expectToken(':')
             self.nextToken()
-            type = self.parseType()
+            memberType = self.parseType()
             self.expectToken(';')
             self.nextToken()
-            print('    ' + name + ': ' + str(type))
+            members.append((memberName, memberType))
         self.nextToken()
+        for member in members:
+            print('    ' + member[0] + ': ' + str(member[1]))
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
