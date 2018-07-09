@@ -17,9 +17,9 @@ class Type:
         self.args = args
         self.ret = ret
     def __str__(self):
-        if self.type == 'Base':
-            return self.name
-        elif self.type == 'Template':
+        if self.type == 'type':
+            s = self.name
+        elif self.type == 'template':
             s = self.name + '('
             first = True
             for arg in self.args:
@@ -29,8 +29,7 @@ class Type:
                     first = False
                 s += str(arg)
             s += ')'
-            return s
-        elif self.type == 'Function':
+        elif self.type == 'function':
             s = '('
             first = True
             for arg in self.args:
@@ -42,9 +41,14 @@ class Type:
             s += ')'
             if self.ret is not None:
                 s += ' -> ' + str(self.ret)
-            return s
+        elif self.type == 'interface' or self.type == 'struct':
+            s = self.type + ' ' + self.name + ' {\n'
+            for arg in self.args:
+                s += '    ' + arg[0] + ': ' + str(arg[1]) + '\n'
+            s += '}'
         else:
-            return '<Unknown>'
+            s = '<Unknown>'
+        return s
 
 class Tokenizer:
     def __init__(self):
@@ -109,9 +113,9 @@ class Parser:
                         first = False
                     args.append(self.parseType())
                 self.nextToken()
-                return Type('Template', name, args)
+                return Type('template', name, args)
             else:
-                return Type('Base', name)
+                return Type('type', name)
         elif self.token.type == '(':
             self.nextToken()
             args = []
@@ -134,14 +138,14 @@ class Parser:
             if self.token.type == '->':
                 self.nextToken()
                 ret = self.parseType()
-            return Type('Function', None, args, ret)
+            return Type('function', None, args, ret)
         else:
             self.parseError()
     def parseStruct(self):
         type = self.token.data
         self.nextToken()
         self.expectToken('Identifier')
-        print(type, self.token.data)
+        name = self.token.data
         self.nextToken()
         self.expectToken('{')
         self.nextToken()
@@ -157,8 +161,7 @@ class Parser:
             self.nextToken()
             members.append((memberName, memberType))
         self.nextToken()
-        for member in members:
-            print('    ' + member[0] + ': ' + str(member[1]))
+        return Type(type, name, members)
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
@@ -166,7 +169,7 @@ class Parser:
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
                 if self.token.data == 'struct' or self.token.data == 'interface':
-                    self.parseStruct()
+                    print(self.parseStruct())
                     continue
             self.parseError()
 
