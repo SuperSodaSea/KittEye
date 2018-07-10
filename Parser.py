@@ -1,3 +1,4 @@
+import enum
 import os
 import re
 import sys
@@ -11,15 +12,21 @@ class Token:
         return '({}, {})'.format(self.type, self.data)
 
 class Type:
+    class Type(enum.Enum):
+        TYPE = 'type'
+        TEMPLATE = 'template'
+        FUNCTION = 'function'
+        STRUCT = 'struct'
+        INTERFACE = 'interface'
     def __init__(self, type, name, args = None, ret = None):
         self.type = type
         self.name = name
         self.args = args
         self.ret = ret
     def __str__(self):
-        if self.type == 'type':
+        if self.type == Type.Type.TYPE:
             s = self.name
-        elif self.type == 'template':
+        elif self.type == Type.Type.TEMPLATE:
             s = self.name + '('
             first = True
             for arg in self.args:
@@ -29,7 +36,7 @@ class Type:
                     first = False
                 s += str(arg)
             s += ')'
-        elif self.type == 'function':
+        elif self.type == Type.Type.FUNCTION:
             s = '('
             first = True
             for arg in self.args:
@@ -41,8 +48,12 @@ class Type:
             s += ')'
             if self.ret is not None:
                 s += ' -> ' + str(self.ret)
-        elif self.type == 'interface' or self.type == 'struct':
-            s = self.type + ' ' + self.name + ' {\n'
+        elif self.type == Type.Type.STRUCT or self.type == Type.Type.INTERFACE:
+            if self.type == Type.Type.STRUCT:
+                s = 'struct '
+            else:
+                s = 'interface '
+            s += self.name + ' {\n'
             for arg in self.args:
                 s += '    ' + arg[0] + ': ' + str(arg[1]) + '\n'
             s += '}'
@@ -113,9 +124,9 @@ class Parser:
                         first = False
                     args.append(self.parseType())
                 self.nextToken()
-                return Type('template', name, args)
+                return Type(Type.Type.TEMPLATE, name, args)
             else:
-                return Type('type', name)
+                return Type(Type.Type.TYPE, name)
         elif self.token.type == '(':
             self.nextToken()
             args = []
@@ -138,7 +149,7 @@ class Parser:
             if self.token.type == '->':
                 self.nextToken()
                 ret = self.parseType()
-            return Type('function', None, args, ret)
+            return Type(Type.Type.FUNCTION, None, args, ret)
         else:
             self.parseError()
     def parseStruct(self):
@@ -161,7 +172,10 @@ class Parser:
             self.nextToken()
             members.append((memberName, memberType))
         self.nextToken()
-        return Type(type, name, members)
+        if type == 'struct':
+            return Type(Type.Type.STRUCT, name, members)
+        else:
+            return Type(Type.Type.INTERFACE, name, members)
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
