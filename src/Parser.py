@@ -11,55 +11,6 @@ class Token:
     def __str__(self):
         return '({}, {})'.format(self.type, self.data)
 
-class Type:
-    class Type(enum.Enum):
-        TYPE = 'type'
-        TEMPLATE = 'template'
-        FUNCTION = 'function'
-        STRUCT = 'struct'
-        INTERFACE = 'interface'
-    def __init__(self, type, name, args = None, ret = None):
-        self.type = type
-        self.name = name
-        self.args = args
-        self.ret = ret
-    def __str__(self):
-        if self.type == Type.Type.TYPE:
-            s = self.name
-        elif self.type == Type.Type.TEMPLATE:
-            s = self.name + '('
-            first = True
-            for arg in self.args:
-                if not first:
-                    s += ', '
-                else:
-                    first = False
-                s += str(arg)
-            s += ')'
-        elif self.type == Type.Type.FUNCTION:
-            s = '('
-            first = True
-            for arg in self.args:
-                if not first:
-                    s += ', '
-                else:
-                    first = False
-                s += arg[0] + ': ' + str(arg[1])
-            s += ')'
-            if self.ret is not None:
-                s += ' -> ' + str(self.ret)
-        elif self.type == Type.Type.STRUCT or self.type == Type.Type.INTERFACE:
-            if self.type == Type.Type.STRUCT:
-                s = 'struct '
-            else:
-                s = 'interface '
-            s += self.name + ' {\n'
-            for arg in self.args:
-                s += '    ' + arg[0] + ': ' + str(arg[1]) + '\n'
-            s += '}'
-        else:
-            s = '<Unknown>'
-        return s
 
 class Tokenizer:
     def __init__(self):
@@ -100,6 +51,70 @@ class Tokenizer:
         tokens.append(Token('End', '<End>'))
         return tokens
 
+
+class Type:
+    def __init__(self, name):
+        self.name = name
+    def __str__(self):
+        return self.name
+
+class TemplateType:
+    def __init__(self, name, arguments):
+        self.name = name
+        self.arguments = arguments
+    def __str__(self):
+        s = self.name + '('
+        first = True
+        for argument in self.arguments:
+            if not first:
+                s += ', '
+            else:
+                first = False
+            s += str(argument)
+        s += ')'
+        return s
+
+class FunctionType:
+    def __init__(self, arguments, ret):
+        self.arguments = arguments
+        self.ret = ret
+    def __str__(self):
+        s = '('
+        first = True
+        for argument in self.arguments:
+            if not first:
+                s += ', '
+            else:
+                first = False
+            s += argument[0] + ': ' + str(argument[1])
+        s += ')'
+        if self.ret is not None:
+            s += ' -> ' + str(self.ret)
+        return s
+
+class StructType:
+    def __init__(self, name, members):
+        self.name = name
+        self.members = members
+    def __str__(self):
+        s = 'struct ' + self.name + ' {\n'
+        for member in self.members:
+            s += '    ' + member[0] + ': ' + str(member[1]) + '\n'
+        s += '}'
+        return s
+
+class InterfaceType:
+    def __init__(self, name, members):
+        self.name = name
+        self.members = members
+    def __str__(self):
+        s = 'interface ' + self.name + ' {\n'
+        for member in self.members:
+            s += '    ' + member[0] + ': ' + str(member[1]) + '\n'
+        s += '}'
+        return s
+
+
 class Parser:
     def nextToken(self):
         self.pos += 1
@@ -114,7 +129,7 @@ class Parser:
             self.nextToken()
             if self.token.type == '(':
                 self.nextToken()
-                args = []
+                arguments = []
                 first = True
                 while self.token.type != ')':
                     if not first:
@@ -122,14 +137,14 @@ class Parser:
                         self.nextToken()
                     else:
                         first = False
-                    args.append(self.parseType())
+                    arguments.append(self.parseType())
                 self.nextToken()
-                return Type(Type.Type.TEMPLATE, name, args)
+                return TemplateType(name, arguments)
             else:
-                return Type(Type.Type.TYPE, name)
+                return Type(name)
         elif self.token.type == '(':
             self.nextToken()
-            args = []
+            arguments = []
             first = True
             while self.token.type != ')':
                 if not first:
@@ -143,13 +158,13 @@ class Parser:
                 self.expectToken(':')
                 self.nextToken()
                 arg = self.parseType()
-                args.append((name, arg))
+                arguments.append((name, arg))
             self.nextToken()
             ret = None
             if self.token.type == '->':
                 self.nextToken()
                 ret = self.parseType()
-            return Type(Type.Type.FUNCTION, None, args, ret)
+            return FunctionType(arguments, ret)
         else:
             self.parseError()
     def parseStruct(self):
@@ -173,9 +188,9 @@ class Parser:
             members.append((memberName, memberType))
         self.nextToken()
         if type == 'struct':
-            return Type(Type.Type.STRUCT, name, members)
+            return StructType(name, members)
         else:
-            return Type(Type.Type.INTERFACE, name, members)
+            return InterfaceType(name, members)
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
