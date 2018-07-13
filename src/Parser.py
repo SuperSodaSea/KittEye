@@ -93,22 +93,30 @@ class FunctionType:
         return s
 
 class StructType:
-    def __init__(self, name, members):
+    def __init__(self, name, parent, members):
         self.name = name
+        self.parent = parent
         self.members = members
     def __str__(self):
-        s = 'struct ' + self.name + ' {\n'
+        s = 'struct ' + self.name
+        if self.parent is not None:
+            s += ' : ' + str(self.parent)
+        s += ' {\n'
         for member in self.members:
             s += '    ' + member[0] + ': ' + str(member[1]) + '\n'
         s += '}'
         return s
 
 class InterfaceType:
-    def __init__(self, name, members):
+    def __init__(self, name, parent, members):
         self.name = name
+        self.parent = parent
         self.members = members
     def __str__(self):
-        s = 'interface ' + self.name + ' {\n'
+        s = 'interface ' + self.name
+        if self.parent is not None:
+            s += ' : ' + str(self.parent)
+        s += ' {\n'
         for member in self.members:
             s += '    ' + member[0] + ': ' + str(member[1]) + '\n'
         s += '}'
@@ -173,6 +181,10 @@ class Parser:
         self.expectToken('Identifier')
         name = self.token.data
         self.nextToken()
+        parent = None
+        if self.token.type == ':':
+            self.nextToken()
+            parent = self.parseType()
         self.expectToken('{')
         self.nextToken()
         members = []
@@ -188,9 +200,9 @@ class Parser:
             members.append((memberName, memberType))
         self.nextToken()
         if type == 'struct':
-            return StructType(name, members)
+            return StructType(name, parent, members)
         else:
-            return InterfaceType(name, members)
+            return InterfaceType(name, parent, members)
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
