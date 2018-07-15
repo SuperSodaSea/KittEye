@@ -15,6 +15,8 @@ class Token:
 class Tokenizer:
     def __init__(self):
         self.space = re.compile('[ \t\r\n]+')
+        self.commentBegin = re.compile('/\*')
+        self.commentEnd = re.compile('\*/')
         self.tokenTypes = [
             ('Identifier', '[A-Z_a-z][0-9A-Z_a-z]*'),
             ('(', '\('),
@@ -29,12 +31,22 @@ class Tokenizer:
         self.regexs = []
         for tokenType in self.tokenTypes:
             self.regexs.append(re.compile(tokenType[1]))
+    def tokenizeError(self, info):
+        raise RuntimeError(info)
     def tokenize(self, data):
         tokens = []
         pos = 0
         while pos < len(data):
             m = self.space.match(data, pos)
             if m:
+                pos = m.end()
+                continue
+            m = self.commentBegin.match(data, pos)
+            if m:
+                pos = m.end()
+                m = self.commentEnd.search(data, pos)
+                if not m:
+                    self.tokenizeError('Unterminated comment')
                 pos = m.end()
                 continue
             match = False
@@ -47,7 +59,7 @@ class Tokenizer:
                     match = True
                     break
             if not match:
-                raise RuntimeError('Unknown token at ' + str(pos) + ': ' + data[pos])
+                self.tokenizeError('Unknown token at ' + str(pos) + ': ' + data[pos])
         tokens.append(Token('End', '<End>'))
         return tokens
 
