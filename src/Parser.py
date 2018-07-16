@@ -104,6 +104,17 @@ class FunctionType:
             s += ' -> ' + str(self.ret)
         return s
 
+class EnumType:
+    def __init__(self, name, enumerators):
+        self.name = name
+        self.enumerators = enumerators
+    def __str__(self):
+        s = 'enum ' + self.name + ' {\n'
+        for enumerator in self.enumerators:
+            s += '    ' + enumerator + ',\n'
+        s += '}'
+        return s
+
 class StructType:
     def __init__(self, name, parent, members):
         self.name = name
@@ -215,12 +226,35 @@ class Parser:
             return StructType(name, parent, members)
         else:
             return InterfaceType(name, parent, members)
+    def parseEnum(self):
+        self.nextToken()
+        self.expectToken('Identifier')
+        name = self.token.data
+        self.nextToken()
+        self.expectToken('{')
+        self.nextToken()
+        enumerators = []
+        while self.token.type != '}':
+            self.expectToken('Identifier')
+            enumerators.append(self.token.data)
+            self.nextToken()
+            if self.token.type == '}':
+                break
+            elif self.token.type == ',':
+                self.nextToken()
+            else:
+                self.parseError()
+        self.nextToken()
+        return EnumType(name, enumerators)
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
         self.token = self.tokens[0]
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
+                if self.token.data == 'enum':
+                    print(self.parseEnum())
+                    continue
                 if self.token.data == 'struct' or self.token.data == 'interface':
                     print(self.parseStruct())
                     continue
