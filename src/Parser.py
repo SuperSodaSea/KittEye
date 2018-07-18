@@ -279,15 +279,17 @@ class Parser:
         self.tokens = tokens
         self.pos = 0
         self.token = self.tokens[0]
+        types = []
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
                 if self.token.data == 'enum':
-                    print(self.parseEnum())
+                    types.append(self.parseEnum())
                     continue
                 if self.token.data == 'struct' or self.token.data == 'interface':
-                    print(self.parseStruct())
+                    types.append(self.parseStruct())
                     continue
             self.parseError()
+        return types
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -299,5 +301,9 @@ if __name__ == '__main__':
     
     tokenizer = Tokenizer()
     tokens = tokenizer.tokenize(data)
+    
     parser = Parser()
-    parser.parse(tokens)
+    types = parser.parse(tokens)
+    
+    for type in types:
+        print(type)
