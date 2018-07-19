@@ -222,6 +222,31 @@ class Parser:
             return FunctionType(arguments, ret)
         else:
             self.parseError()
+    def parseEnum(self):
+        self.nextToken()
+        self.expectToken('Identifier')
+        name = self.token.data
+        self.nextToken()
+        self.expectToken(':')
+        self.nextToken()
+        self.expectToken('Identifier')
+        type = Type(self.token.data)
+        self.nextToken()
+        self.expectToken('{')
+        self.nextToken()
+        enumerators = []
+        while self.token.type != '}':
+            self.expectToken('Identifier')
+            enumerators.append(self.token.data)
+            self.nextToken()
+            if self.token.type == '}':
+                break
+            elif self.token.type == ',':
+                self.nextToken()
+            else:
+                self.parseError()
+        self.nextToken()
+        return EnumType(name, type, enumerators)
     def parseStruct(self):
         type = self.token.data
         self.nextToken()
@@ -250,31 +275,6 @@ class Parser:
             return StructType(name, parent, members)
         else:
             return InterfaceType(name, parent, members)
-    def parseEnum(self):
-        self.nextToken()
-        self.expectToken('Identifier')
-        name = self.token.data
-        self.nextToken()
-        self.expectToken(':')
-        self.nextToken()
-        self.expectToken('Identifier')
-        type = Type(self.token.data)
-        self.nextToken()
-        self.expectToken('{')
-        self.nextToken()
-        enumerators = []
-        while self.token.type != '}':
-            self.expectToken('Identifier')
-            enumerators.append(self.token.data)
-            self.nextToken()
-            if self.token.type == '}':
-                break
-            elif self.token.type == ',':
-                self.nextToken()
-            else:
-                self.parseError()
-        self.nextToken()
-        return EnumType(name, type, enumerators)
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
