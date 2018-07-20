@@ -127,6 +127,13 @@ class FunctionType:
             s += ' -> ' + str(self.ret)
         return s
 
+class ConstantType:
+    def __init__(self, name, type):
+        self.name = name
+        self.type = type
+    def __str__(self):
+        return 'constant ' + self.name + ' -> ' + str(self.type)
+
 class EnumType:
     def __init__(self, name, type, enumerators):
         self.name = name
@@ -222,6 +229,15 @@ class Parser:
             return FunctionType(arguments, ret)
         else:
             self.parseError()
+    def parseConstant(self):
+        self.nextToken()
+        self.expectToken('Identifier')
+        name = self.token.data
+        self.nextToken()
+        self.expectToken('->')
+        self.nextToken()
+        type = self.parseType()
+        return ConstantType(name, type)
     def parseEnum(self):
         self.nextToken()
         self.expectToken('Identifier')
@@ -282,6 +298,9 @@ class Parser:
         types = []
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
+                if self.token.data == 'constant':
+                    types.append(self.parseConstant())
+                    continue
                 if self.token.data == 'enum':
                     types.append(self.parseEnum())
                     continue
