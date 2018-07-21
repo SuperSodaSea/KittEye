@@ -1,5 +1,9 @@
 # Type
 
+## Table of contents
+
++ [Numeric type](#Numeric-type)
+
 ## Numeric type
 
 | Type   | Description                           |
