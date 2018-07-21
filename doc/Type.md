@@ -2,7 +2,7 @@
 
 ## Table of contents
 
-+ [Numeric type](#Numeric-type)
++ [Numeric type](#numeric-type)
 
 ## Numeric type
 
