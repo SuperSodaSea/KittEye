@@ -24,7 +24,7 @@
 from setuptools import *
 
 setup(
-    name = 'test',
+    name = 'kitteye',
     version = '0.1.0',
     keywords = 'kitteye',
     description = 'KittEye',
