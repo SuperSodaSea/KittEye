@@ -11,3 +11,11 @@
 | IntX   | X-bit 2's complement signed integer.  |
 | UintX  | X-bit unsigned integer.               |
 | FloatX | X-bit IEEE 754 floating point number. |
+
+## Enumeration type
+
+## Function type
+
+## Struct type
+
+## Interface type
