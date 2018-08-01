@@ -3,6 +3,10 @@
 ## Table of contents
 
 + [Numeric type](#numeric-type)
++ [Enumeration type](#enumeration-type)
++ [Function type](#function-type)
++ [Struct type](#struct-type)
++ [Interface type](#interface-type)
 
 ## Numeric type
 
