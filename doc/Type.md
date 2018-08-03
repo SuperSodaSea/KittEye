@@ -12,8 +12,8 @@
 
 | Type   | Description                           |
 |:------:|---------------------------------------|
-| IntX   | X-bit 2's complement signed integer.  |
 | UintX  | X-bit unsigned integer.               |
+| IntX   | X-bit 2's complement signed integer.  |
 | FloatX | X-bit IEEE 754 floating point number. |
 
 ## Enumeration type
