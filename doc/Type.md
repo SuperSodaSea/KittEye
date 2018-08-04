@@ -2,11 +2,14 @@
 
 ## Table of contents
 
++ [Boolean type](#boolean-type)
 + [Numeric type](#numeric-type)
 + [Enumeration type](#enumeration-type)
 + [Function type](#function-type)
 + [Struct type](#struct-type)
 + [Interface type](#interface-type)
+
+## Boolean type
 
 ## Numeric type
 
