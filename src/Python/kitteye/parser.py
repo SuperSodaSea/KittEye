@@ -24,6 +24,7 @@
 import os
 import sys
 
+from kitteye.declaration import *
 from kitteye.tokenizer import *
 from kitteye.type import *
 
@@ -88,7 +89,7 @@ class Parser:
         self.expectToken('->')
         self.nextToken()
         type = self.parseType()
-        return ConstantType(name, type)
+        return ConstantDeclaration(name, type)
     def parseEnum(self):
         self.nextToken()
         self.expectToken('Identifier')
@@ -113,7 +114,7 @@ class Parser:
             else:
                 self.parseError()
         self.nextToken()
-        return EnumType(name, type, enumerators)
+        return EnumDeclaration(name, type, enumerators)
     def parseStruct(self):
         type = self.token.data
         self.nextToken()
@@ -139,9 +140,9 @@ class Parser:
             members.append((memberName, memberType))
         self.nextToken()
         if type == 'struct':
-            return StructType(name, parent, members)
+            return StructDeclaration(name, parent, members)
         else:
-            return InterfaceType(name, parent, members)
+            return InterfaceDeclaration(name, parent, members)
     def parse(self, tokens):
         self.tokens = tokens
         self.pos = 0
