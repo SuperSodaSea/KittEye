@@ -27,6 +27,7 @@ import sys
 from kitteye.declaration import *
 from kitteye.tokenizer import *
 from kitteye.type import *
+from kitteye.language.c import *
 
 
 class Parser:
@@ -178,3 +179,5 @@ if __name__ == '__main__':
     
     for type in types:
         print(type)
+    
+    generator = CGenerator()
