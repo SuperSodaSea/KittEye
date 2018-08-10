@@ -148,20 +148,20 @@ class Parser:
         self.tokens = tokens
         self.pos = 0
         self.token = self.tokens[0]
-        types = []
+        declarations = []
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
                 if self.token.data == 'constant':
-                    types.append(self.parseConstant())
+                    declarations.append(self.parseConstant())
                     continue
                 if self.token.data == 'enum':
-                    types.append(self.parseEnum())
+                    declarations.append(self.parseEnum())
                     continue
                 if self.token.data == 'struct' or self.token.data == 'interface':
-                    types.append(self.parseStruct())
+                    declarations.append(self.parseStruct())
                     continue
             self.parseError()
-        return types
+        return declarations
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
@@ -175,9 +175,9 @@ if __name__ == '__main__':
     tokens = tokenizer.tokenize(data)
     
     parser = Parser()
-    types = parser.parse(tokens)
+    declarations = parser.parse(tokens)
     
-    for type in types:
-        print(type)
+    for declaration in declarations:
+        print(declaration)
     
     generator = CGenerator()
