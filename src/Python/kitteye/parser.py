@@ -162,22 +162,28 @@ class Parser:
                     continue
             self.parseError()
         return declarations
+    
+    def parseFile(path):
+        with open(path, 'r') as file:
+            data = file.read()
+        
+        tokenizer = Tokenizer()
+        tokens = tokenizer.tokenize(data)
+        
+        parser = Parser()
+        declarations = parser.parse(tokens)
+        
+        return declarations
+    
+    
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('Usage:')
         print('    Parser.py <file>')
         exit(1)
-    with open(sys.argv[1], 'r') as file:
-        data = file.read()
     
-    tokenizer = Tokenizer()
-    tokens = tokenizer.tokenize(data)
-    
-    parser = Parser()
-    declarations = parser.parse(tokens)
-    
-    for declaration in declarations:
-        print(declaration)
+    declarations = Parser.parseFile(sys.argv[1])
     
     generator = CGenerator()
+    generator.generate(declarations)

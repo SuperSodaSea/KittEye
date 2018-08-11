@@ -22,4 +22,5 @@
 '''
 
 class CGenerator:
-    pass
+    def generate(self, declarations):
+        pass
