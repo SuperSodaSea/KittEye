@@ -27,7 +27,6 @@ import sys
 from kitteye.declaration import *
 from kitteye.tokenizer import *
 from kitteye.type import *
-from kitteye.language.c import *
 
 
 class Parser:
@@ -174,16 +173,3 @@ class Parser:
         declarations = parser.parse(tokens)
         
         return declarations
-    
-    
-
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print('Usage:')
-        print('    Parser.py <file>')
-        exit(1)
-    
-    declarations = Parser.parseFile(sys.argv[1])
-    
-    generator = CGenerator()
-    generator.generate(declarations)

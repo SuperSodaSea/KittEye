@@ -21,6 +21,38 @@
     SOFTWARE.
 '''
 
-class CGenerator:
-    def generate(self, declarations, name):
-        pass
+import os
+
+from kitteye.parser import *
+from kitteye.language.c import *
+
+
+def parse(path):
+    modules = {}
+    for x in os.listdir(path):
+        p = os.path.join(path, x)
+        if os.path.isdir(p):
+            modules[x] = parse(p)
+        elif os.path.isfile(p) and os.path.splitext(x)[1] == '.kei':
+            declarations = Parser.parseFile(p)
+            modules[os.path.splitext(x)[0]] = declarations
+    return modules
+
+def generate(modules, name):
+    generator = CGenerator()
+    for x in modules:
+        if isinstance(modules[x], list):
+            generator.generate(modules[x], name)
+        else:
+            generate(modules[x], name + [x])
+            
+            
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print('Usage:')
+        print('    generator <path>')
+        exit(1)
+    
+    modules = parse(os.path.normpath(sys.argv[1]))
+    generate(modules, [])
