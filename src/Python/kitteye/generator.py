@@ -42,17 +42,17 @@ def generate(modules, name):
     generator = CGenerator()
     for x in modules:
         if isinstance(modules[x], list):
-            generator.generate(modules[x], name)
+            generator.generate(modules[x], name + [x])
         else:
             generate(modules[x], name + [x])
             
 
 def isInternalType(type):
-    if type == 'Uint8' or type == 'Uint16' or type == 'Uint32' or type == 'Uint64'
+    if type == 'Uint8' or type == 'Uint16' or type == 'Uint32' or type == 'Uint64':
         return True
-    if type == 'Int8' or type == 'Int16' or type == 'Int32' or type == 'Int64'
+    if type == 'Int8' or type == 'Int16' or type == 'Int32' or type == 'Int64':
         return True
-    if type == 'Float32' or type == 'Float64'
+    if type == 'Float32' or type == 'Float64':
         return True
     return False
 
