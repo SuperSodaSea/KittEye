@@ -58,6 +58,8 @@ def isInternalType(name):
     return False
 
 def findType(modules, name):
+    if isInternalType(name):
+        return [name]
     for x in modules:
         module = modules[x]
         if isinstance(module, list):
