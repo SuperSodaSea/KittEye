@@ -81,6 +81,17 @@ class Parser:
             return FunctionType(arguments, ret)
         else:
             self.parseError()
+    def parseImport(self):
+        self.nextToken()
+        self.expectToken('Identifier')
+        name = [self.token.data]
+        self.nextToken()
+        while self.token.type == '.':
+            self.nextToken()
+            self.expectToken('Identifier')
+            name = name + [self.token.data]
+            self.nextToken()
+        return ImportDeclaration(name)
     def parseConstant(self):
         self.nextToken()
         self.expectToken('Identifier')
@@ -150,6 +161,9 @@ class Parser:
         declarations = []
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
+                if self.token.data == 'import':
+                    declarations.append(self.parseImport())
+                    continue
                 if self.token.data == 'constant':
                     declarations.append(self.parseConstant())
                     continue
