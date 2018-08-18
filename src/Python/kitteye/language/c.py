@@ -21,6 +21,11 @@
     SOFTWARE.
 '''
 
+from kitteye.generator import *
+
+
 class CGenerator:
     def generate(self, declarations, name):
-        pass
+        print(name)
+        for declaration in declarations:
+            print(declaration)
