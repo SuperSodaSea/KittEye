@@ -53,7 +53,7 @@ def isInternalType(name):
         return True
     if name == 'Int8' or name == 'Int16' or name == 'Int32' or name == 'Int64':
         return True
-    if name == 'Float32' or name == 'Float64':
+    if name == 'Float16' or name == 'Float32' or name == 'Float64':
         return True
     return False
 
