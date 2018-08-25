@@ -28,6 +28,13 @@ class ImportDeclaration:
         s = 'import ' + '.'.join(self.name)
         return s
 
+class TypeDeclaration:
+    def __init__(self, name):
+        self.name = name
+    def __str__(self):
+        s = 'type ' + self.name
+        return s
+
 class ConstantDeclaration:
     def __init__(self, name, type):
         self.name = name
