@@ -81,6 +81,12 @@ class Parser:
             return FunctionType(arguments, ret)
         else:
             self.parseError()
+    def parseInternal(self):
+        self.nextToken()
+        self.expectToken('Identifier')
+        name = self.token.data
+        self.nextToken()
+        return InternalDeclaration(name)
     def parseImport(self):
         self.nextToken()
         self.expectToken('Identifier')
@@ -161,6 +167,9 @@ class Parser:
         declarations = []
         while self.token.type != 'End':
             if self.token.type == 'Identifier':
+                if self.token.data == 'internal':
+                    declarations.append(self.parseInternal())
+                    continue
                 if self.token.data == 'import':
                     declarations.append(self.parseImport())
                     continue
