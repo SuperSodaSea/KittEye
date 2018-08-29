@@ -46,16 +46,6 @@ def generate(modules, name):
             generator.generate(module, name + [x])
         else:
             generate(module, name + [x])
-            
-
-def isInternalType(name):
-    if name == 'Uint8' or name == 'Uint16' or name == 'Uint32' or name == 'Uint64':
-        return True
-    if name == 'Int8' or name == 'Int16' or name == 'Int32' or name == 'Int64':
-        return True
-    if name == 'Float16' or name == 'Float32' or name == 'Float64':
-        return True
-    return False
 
 def findType(modules, name):
     if isInternalType(name):
