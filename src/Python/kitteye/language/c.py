@@ -21,6 +21,7 @@
     SOFTWARE.
 '''
 
+from kitteye.declaration import *
 from kitteye.generator import *
 
 
@@ -28,4 +29,15 @@ class CGenerator:
     def generate(self, declarations, name):
         print(name)
         for declaration in declarations:
-            print(declaration)
+            if type(declaration) == ImportDeclaration:
+                pass
+            elif type(declaration) == InternalDeclaration:
+                pass
+            elif type(declaration) == ConstantDeclaration:
+                pass
+            elif type(declaration) == EnumDeclaration:
+                pass
+            elif type(declaration) == StructDeclaration:
+                pass
+            elif type(declaration) == InterfaceDeclaration:
+                pass
